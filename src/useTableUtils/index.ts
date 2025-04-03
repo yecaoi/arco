@@ -1,7 +1,7 @@
 import type { TableColumnData, TableData, TableInstance } from '@arco-design/web-vue'
 import type { Get, Paths } from 'type-fest'
 import type { MaybeRef } from 'vue'
-import type { MaybeIterable } from '../type'
+import type { MaybeIterable } from '../maybe-iterable'
 
 import { get, omit } from 'es-toolkit/compat'
 
