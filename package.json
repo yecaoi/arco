@@ -1,18 +1,17 @@
 {
   "name": "@yecaoi/arco",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "packageManager": "pnpm@10.6.2",
   "description": "_description_",
-  "author": "Anthony Fu <anthonyfu117@hotmail.com>",
+  "author": "yecaoi <yecaoi@pm.me>",
   "license": "MIT",
-  "funding": "https://github.com/sponsors/yecaoi",
-  "homepage": "https://github.com/yecaoi/@yecaoi/arco#readme",
+  "homepage": "https://github.com/yecaoi/arco#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yecaoi/@yecaoi/arco.git"
+    "url": "git+https://github.com/yecaoi/arco.git"
   },
-  "bugs": "https://github.com/yecaoi/@yecaoi/arco/issues",
+  "bugs": "https://github.com/yecaoi/arco/issues",
   "keywords": [],
   "sideEffects": false,
   "exports": {
