@@ -1,6 +1,6 @@
 export type GetArgument<
-  N extends number = 0,
   T = unknown,
+  N extends number = 0,
   ExcludeUndefined extends boolean = true,
 > = T extends (...args: any) => any
   ? ExcludeUndefined extends true
