@@ -99,13 +99,15 @@ export function useFormUtils<
     watch(options.default, (n) => {
       isUpdateDefault.value = true
       if (n) {
-        const { data } = diff(n, model)
-        const updated = flattenObject(data)
-        for (const key in updated) {
-          set(model, key, get(data, key))
-        }
+        const data = diff(n, model)
+        if (data) {
+          const updated = flattenObject(data)
+          for (const key in updated) {
+            set(model, key, get(data, key))
+          }
 
-        removeNonExistingProperties(model, n)
+          removeNonExistingProperties(model, n)
+        }
       }
       else {
         removeNonExistingProperties(model, Object.create(null))
