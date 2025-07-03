@@ -13,12 +13,14 @@ export function diff<
 ): DiffData<NewValue> | undefined {
   let result: DiffData<NewValue> | undefined
 
-  // 针对原值为空的比较
-  if (original === undefined || original === null) {
-    result = updated as DiffData<NewValue>
-  }
+  // // 针对原值为空的比较
+  // if (original === undefined || original === null) {
+  //   // 如果新值和旧值不同
+  //   if (updated !== original)
+  //     result = updated as DiffData<NewValue>
+  // }
   // 针对对象类型的比较
-  else if (typeof updated === 'object') {
+  if (typeof updated === 'object') {
     // 针对数组的比较
     if (Array.isArray(updated)) {
       // 如果原值也是数组
@@ -58,11 +60,12 @@ export function diff<
 
         // 检查是否旧值中存在此键
         if (has(original, key)) {
-        // 取旧值
+          // 取旧值
           const o = get(original, key)
-          const diffValue = diff(o, n)
+
+          const diffValue = diff(n, o)
           if (diffValue !== undefined) {
-          // 将值设置为差异数据
+            // 将值设置为差异数据
             set(_result, key, diffValue)
           }
         }

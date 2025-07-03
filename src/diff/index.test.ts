@@ -40,5 +40,21 @@ describe('diff', () => {
     expect(diff([1, 2, 3], [1, 2, 3])).toEqual(undefined)
     expect(diff([1, 3, 3], [1, 2, 3, 4])).toEqual([3])
     expect(diff([1, { a: 1 }, 3], [1, 2, 3, 4])).toEqual([{ a: 1 }])
+
+    expect(diff({
+      nickname: 'asdasd',
+      username: 'admin',
+      email: 'admin@example.com',
+      bio: null,
+    }, {
+      id: 1,
+      createdAt: '2025-07-02T06:51:57.537037Z',
+      updatedAt: '2025-07-03T02:24:34.348432Z',
+      nickname: null,
+      bio: null,
+      username: 'admin',
+      email: 'admin@example.com',
+      role: 'admin',
+    })).toEqual({ nickname: 'asdasd' })
   })
 })
