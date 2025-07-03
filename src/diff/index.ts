@@ -1,67 +1,85 @@
-import { get, set } from 'es-toolkit/compat'
+import { get, has, set } from 'es-toolkit/compat'
 
-export type DeepPartial<T> = {
-  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
-}
+export type DiffData<T> = T extends object ? {
+  [P in keyof T]?: T[P] extends object ? DiffData<T[P]> : T[P];
+} : T
 
 export function diff<
-  NewValue extends object,
-  OldValue extends object,
+  NewValue = any,
+  OldValue = any,
 >(
-  updated: NewValue | undefined,
-  original: OldValue | undefined,
-): { data: DeepPartial<NewValue>, is: boolean } {
-  let is = false
+  updated: NewValue,
+  original?: OldValue,
+): DiffData<NewValue> | undefined {
+  let result: DiffData<NewValue> | undefined
 
-  function fn<
-    NewValue extends object,
-    OldValue extends object,
-  >(
-    updated: NewValue | undefined,
-    original: OldValue | undefined,
-  ): DeepPartial<NewValue> {
-    const data: DeepPartial<NewValue> = Object.create(null)
-
-    if (updated === undefined || original === undefined) {
-      return data
-    }
-
-    // 遍历更新后的对象的所有键
-    for (const key in updated) {
-    // 检查是否在原始对象中存在此键
-      if (key in original) {
-        const o = get(original, key)
-        const n = updated[key]
-
-        // 如果两者都是对象（且不为null），则递归比较
-        if (
-          o
-          && n
-          && typeof o === 'object'
-          && typeof n === 'object'
-        ) {
-          const nestedChanges = fn(o, n)
-          // 只有当有嵌套变更时才添加
-          if (Object.keys(nestedChanges).length > 0) {
-            set(data, key, nestedChanges)
-            is = true
+  // 针对原值为空的比较
+  if (original === undefined || original === null) {
+    result = updated as DiffData<NewValue>
+  }
+  // 针对对象类型的比较
+  else if (typeof updated === 'object') {
+    // 针对数组的比较
+    if (Array.isArray(updated)) {
+      // 如果原值也是数组
+      if (Array.isArray(original)) {
+        const _result = []
+        for (const [index, i] of updated.entries()) {
+          // 如果旧值的长度小于当前索引位置
+          if (original.length < index + 1) {
+            _result.push(i)
+          }
+          // 如果新元素是对象
+          else if (typeof i === 'object') {
+            const _i = diff(i, original[index])
+            if (_i !== undefined)
+              _result.push(_i)
+          }
+          // 如果新旧值不相等
+          else if (i !== original[index]) {
+            _result.push(i)
           }
         }
-        // 直接值比较，如果不同则记录
-        else if (o !== n) {
-          data[key] = n
-          is = true
-        }
+
+        if (_result.length)
+          result = _result as DiffData<NewValue>
       }
-      // 如果是新增的键，也记录
+      // 如果原值不是数组
       else {
-        data[key] = (updated as any)[key]
-        is = true
+        result = updated as DiffData<NewValue>
       }
     }
+    // 针对Record的比较
+    else {
+      const _result = Object.create(null)
+      // 遍历新值的所有键
+      for (const key in updated) {
+        const n = get(updated, key)
 
-    return data
+        // 检查是否旧值中存在此键
+        if (has(original, key)) {
+        // 取旧值
+          const o = get(original, key)
+          const diffValue = diff(o, n)
+          if (diffValue !== undefined) {
+          // 将值设置为差异数据
+            set(_result, key, diffValue)
+          }
+        }
+        else {
+          set(_result, key, n)
+        }
+      }
+
+      if (Object.keys(_result).length) {
+        result = _result
+      }
+    }
+  }
+  // 两个对象不可能相等, 所以在处理完对象的情况后再比较具体值
+  else if (updated !== original) {
+    result = updated as DiffData<NewValue>
   }
 
-  return { data: fn(updated, original), is }
+  return result
 }
